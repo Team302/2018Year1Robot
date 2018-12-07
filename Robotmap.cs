@@ -5,7 +5,7 @@ namespace yearone2018
 {
     class Robotmap
     {
-            private static Robotmap instance = null;
+        private static Robotmap instance = null;
             public static Robotmap GetInstance()
             {
                 if (instance == null)
@@ -57,72 +57,75 @@ namespace yearone2018
                 return CAN_ID_LED;
             }
 
-                private int DIGITAL_ID_LowerSensor = 1;
-                    public int GetLowerSensor_ID ()
-                    {
-                        return DIGITAL_ID_LowerSensor;
-                    }
-
-                private int DIGITAL_ID_UpperSensor = 2;
-                    public int GetUpperSensor_ID ()
-                    {
-                        return DIGITAL_ID_UpperSensor;
-                    }
-
-                private int DIGITAL_ID_BumperSensor = 3;
-                    public int GetBumperSensor_ID ()
-                    {
-                        return DIGITAL_ID_BumperSensor;
-                    }
-
-                            private int PWM_ID_FlagGrabber = 1;
-                                public int GetFlagGrabber_ID ()
-                                {
-                                    return PWM_ID_FlagGrabber;
-                                }
-
-                            private int PWM_ID_DeliverMec = 2;
-                                public int GetDeliverMec_ID ()
-                                {
-                                    return PWM_ID_DeliverMec;
-                                }
-        // TODO:  looks like leftover stuff from LED
-        enum MECHANISM_Robotmap
-        {
-        RED,
-        };
-        //
-        private Robotmap()
-        {
-            lightie_boies = new CANifier(Robotmap_CAN_ID);
-
-            //
-        }
-
-        public void set_color
-        (
-            MECHANISM_Robotmap color
-        )
-        {
-            int r = -1;
-            int g = -1;
-            int b = -1 ;
-
-            switch (color)
+        private int CAN_ID_PIGEON = 8;
+            public int Get_ID_Pigeon ()
             {
-             case RED:
-                    r = 
-                    break;
-             default:
-                    r = 0;
-                    g = 0;
-                    b = 0;
+                return CAN_ID_PIGEON;
             }
-            lightie_boies.SetLEDOutput(r, CANifier.LEDChannel.LEDChannelA);
-            lightie_boies.SetLEDOutput(g, CANifier.LEDChannel.LEDChannelA);
-            lightie_boies.SetLEDOutput(b, CANifier.LEDChannel.LEDChannelA);
+        private int CAN_ID_ELEVATOR = 9;
+            public int GetELEVATOR_ID ()
+            {
+                return CAN_ID_Elevator;
+            }
+            
+        private int CAN_ID_FlagGrabber = 10;
+            public int GetFlagGrabber_ID ()
+            {
+                return CAN_ID_FlagGrabber;
+            }
 
-            // 
-        }
+        private int DIGITAL_ID_LowerSensor = 1;
+            public int GetLowerSensor_ID ()
+            {
+                return DIGITAL_ID_LowerSensor;
+            }
+
+        private int DIGITAL_ID_UpperSensor = 2;
+            public int GetUpperSensor_ID ()
+            {
+                return DIGITAL_ID_UpperSensor;
+            }
+
+        private int DIGITAL_ID_BumperSensor = 3;
+            public int GetBumperSensor_ID ()
+            {
+                return DIGITAL_ID_BumperSensor;
+            }
+
+        private int DIGITAL_ID_FlagGrabber = 4;
+            public int GetFlagGrabber_ID ()
+            {
+                return DIGITAL_ID_FlagGrabber;
+            }
+        private int DIGITAL_ID_TopSensor = 5;
+            public int GetTopSensor_ID ()
+            {
+                return DIGITAL_ID_TopSensor;
+            }
+        private int DIGITAL_ID_BottomSensor = 6;
+            public int GetBottomSensor_ID ()
+            {
+                return DIGITAL_ID_BottomSensor
+            }
+        private int PWM_ID_FlagGrabber = 1;
+            public int GetFlagGrabber_ID ()
+
+        private int PWM_ID_Flaggrabber = 1;
+            public int GetFlaggrabber_ID ()
+            {
+                return PWM_ID_FlagGrabber;
+            }
+
+        private int PWM_ID_DeliverMec = 2;
+            public int GetDeliverMec_ID ()
+            {
+                return PWM_ID_DeliverMec;
+            }
+
+        private int PWM_ID_flaggrabber = 3;
+            public int Getflaggrabber_ID ()
+            {
+                return PWM_ID_flaggrabber;
+            }
     }
 }

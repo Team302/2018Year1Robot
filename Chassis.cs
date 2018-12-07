@@ -5,7 +5,9 @@ namespace yearone2018
 {
     class Chassis
     {
-        
+        private const double Counts = 1440; //# of counts that the encoder uses
+        private const double Drive_Gear_Ratio = 2.64 / 2.4; //The gear ratio of the drive train
+        private const int WheelDiameter = 6;  // The wheel diameter
         private TalonSRX left_motor;
         private TalonSRX right_motor;
         private CTRE.PigeonImu drive_assister;
@@ -27,21 +29,19 @@ namespace yearone2018
         private Chassis()
         {
             RobotMap map = RobotMap.GetInstance();
-            private const int RIGHT_MOTOR_CAN_ID = 0;
-            private const int LEFT_MOTOR_CAN_ID = 1;
             //Constants for variables to use
             private const int DRIVE_ASSISTER_CAN_ID = 4;
             private const int DRIVE_RESTRICTOR = 5;
             private const  int CANifier_Can_ID  = 11;
-            left_motor = new TalonSRX(map.GetLeftDrive_ID);
+            left_motor = new TalonSRX(map.GetLeftDrive_ID());
             left_motor.SetNeutralMode(NeutralMode.Brake);
             left_motor.SetInverted(true); // Can invert the direction the motors are moving
 
-            right_motor = new TalonSRX(map.GetRightDrive_ID);
+            right_motor = new TalonSRX(map.GetRightDrive_ID());
             right_motor.SetNeutralMode(NeutralMode.Brake);
             right_motor.SetInverted(true); // Can invert the direction the motors are moving
 
-            drive_assister = new CTRE.PigeonImu(DRIVE_ASSISTER_CAN_ID); //TODO Get real name of pigeon from Christina
+            drive_assister = new CTRE.PigeonImu(CAN_ID_PIGEON); //TODO Get real name of pigeon from Christina
 
            
 
@@ -83,8 +83,12 @@ namespace yearone2018
         {
             float l = left_motor.GetPostion();
             float r = right_motor.GetPostion();
-            return (l + r) * 0.5f;
+            float average = (l + r) * 0.5f; //Finds average of what the wheel distance
             //Finds the distance traveled using the encoders
+            double counts_per_revolution = average / Counts; //Finds the counts per revolution
+            double inches_per_revolution = (WheelDiameter * Math.PI) * Counts; //Finds how many inches will be travelled per revolution
+            double inches_traveled = inches_per_revolution * Drive_Gear_Ratio; //Finds the inches travelled using gear ratio
+            return inches_traveled;
         }
 
         public bool Is_Bumper_Switch_Pressed

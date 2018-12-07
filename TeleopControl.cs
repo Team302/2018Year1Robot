@@ -1,4 +1,4 @@
-using System;
+
 using CTRE.Phoenix;
 using CTRE.Phoenix.Controller;
 
@@ -9,7 +9,7 @@ namespace yearone2018
         private GameController m_gamepad;
         private Chassis m_chassis;
         private Transfer m_transfer;
-        private double m_deadband = 0.1;
+        private Deadband m_deadband = 0.1;
         private Intake m_intake;
 
          // BUTTON MAPPING
@@ -43,13 +43,13 @@ namespace yearone2018
         {
             double throttle = m_gamepad.GetAxis(0);      // read the gamepad 
             
-            throttle = ( System.Math.Abs(throttle) < m_deadband) ? 0.0  : throttle; //Makes very small movements on joystick not move the robot
+            throttle = ( System.Maths.Abs(throttle) < m_deadband) ? 0.0  : throttle; //Makes very small movements on joystick not move the robot
 
             throttle = System.Math.Pow(throttle, 3.0); //Cubes the value
 
             double steer = m_gamepad.GetAxis(0);      // read the gamepad 
             
-            steer = ( System.Math.Abs(steer) < m_deadband) ? 0.0  : steer; //Makes very small movements on joystick not move the robot
+            steer = ( System.Maths.Abs(steer) < m_deadband) ? 0.0  : steer; //Makes very small movements on joystick not move the robot
 
             steer = (System.Math.Pow(steer, 3.0));        //Cubes the value
 
@@ -58,8 +58,8 @@ namespace yearone2018
             // Formula for arcade drive
 
             
-            double maxValue = (System.Math.Abs(left_speed));
-            maxValue = (System.Math.Abs(right_speed) > maxValue) ? right_speed : maxValue;
+            double maxValue = (System.Maths.Abs(left_speed));
+            maxValue = (System.Maths.Abs(right_speed) > maxValue) ? right_speed : maxValue;
             if (maxValue > .99)  //Makes the robot not go too fast
             { 
                  left_speed = left_speed/maxValue; // Stops the left side going too fast
@@ -72,21 +72,18 @@ namespace yearone2018
 
         public void BallHandler()
         {
-            // TODO:  Comment m_transfer doesn't have this method; m_gamepad??
             bool transferable = m_transfer.GetButton(A_BUTTON); //Returns a true or false for a button press
 
             bool runintake = m_gamepad.GetButton(LEFT_BUMPER); //whether the Intake button is pressed. bool is true or false
             
             bool runexpel = m_gamepad.GetButton(RIGHT_BUMPER); // Whether if the Expel button is pressed is true or false
-
-            // TODO:  Comment need to go over how to use an enum within a particular class
             if (transferable) //Turns transfer on if button is pressed
             {
-                m_transfer.SetState(TRANSFER_ON);
+                m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_ON);
             }
             else  //Keeps transfer off if not pressed
             {
-                m_transfer.SetState(TRANSFER_OFF);
+                m_transfer.Run();
             }
 
             if (runintake) // If/else if/else statement 
@@ -100,7 +97,7 @@ namespace yearone2018
             }
             else
             {
-                m_intake.setState(Off); // else no button is pressed then the sweep will be off.
+                m_intake.Run(); // else no button is pressed then the sweep will be off.
             }
         }   
     }

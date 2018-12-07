@@ -6,13 +6,14 @@ namespace yearone2018
 {
     class AutonControl
     {
-        private const double RobotLength = 27.25; //How long the robot is
+        private const float RobotLength = 27.25; //How long the robot is
         private const int WheelDiameter = 6;  // The wheel diameter
         private const float RedorBlueside = 96; //Only one side of the field, not counting the game grid
         private const double Drive_Speed = .75; //Sets how fast the robot moves
-        private const double SlowDownSpeed = .25;
-        private const double SlowDownPercentage = .80; //Percentage of the whole distance slowing down will take
+        private const double SlowDownSpeed = .25; //Speed for slow down distance
+        private const float SlowDownPercentage = .80; //Percentage of the whole distance slowing down will take
         private const double Correction = 0.01; //Changes the direction if off angle
+         
         private double DistanceToDrive;
         private double DesiredHeading;
         private double TargetDistance;
@@ -28,11 +29,13 @@ namespace yearone2018
             DistanceToDrive = RedorBlueside - RobotLength; //Finds distance to drive
             TargetDistance = m_chassis.Get_Distance() + DistanceToDrive; //Sets the distance needed to travel to get to the game grid
             SlowDownDistance = m_chassis.Get_Distance() + (DistanceToDrive * SlowDownPercentage); //Finds the distance needed for slowing down
-            DesiredHeading = m_chassis.Get_heading();
+            DesiredHeading = m_chassis.Get_heading(); //Finds what heading we want and stored it as a variable
+
             left_motor.SetSensorPhase(true); //Sets encoders
             right_motor.SetSensorPhase(true); //Sets encoders
-            left_motor.ConfigSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0);
-            right_motor.ConfigSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0,0);
+            left_motor.ConfigSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0); //States thet we are using quad encoders
+            right_motor.ConfigSelectedFeedbackSensor(FeedbackDevice.QuadEncoder, 0, 0); //States we are using quad encoders
+
             
         }
 
@@ -50,7 +53,7 @@ namespace yearone2018
             if (bumper_pressed)
             {
                 m_chassis.drive(0); //Stops the bot when bumper pressed
-                Deliver_Mechanism.setState(); //Delivers the balls
+                Deliver_Mechanism.setState(Deliver.DELIVERSTATE.Deliver); //Delivers the balls
             }
             else
             {
@@ -61,12 +64,12 @@ namespace yearone2018
                 }
                  else if (distance < TargetDistance) //Sets the speed slower so the bot can hit the target more accurate
                 {
-                    m_chassis.drive (SlowDownSpeed * right_correction, SlowDownSpeed * left_correction);
+                    m_chassis.drive (SlowDownSpeed * right_correction, SlowDownSpeed * left_correction); 
 
                 }
                 else
                 {
-                    m_chassis.drive (0);
+                    m_chassis.drive (0); //Stops the motors
                 }
             }
 
