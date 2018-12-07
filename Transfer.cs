@@ -15,15 +15,12 @@ namespace yearone2018
         private TalonSRX transferMotor; //The motor for ball transfer
         private LED glowing; //The LEDs
         private Intake eject; //Hong Bing's code
+        private DigitalInput ballInTrasfer; //The thing sensing if the ball intake was successful
 
-        // TODO:  Comment inconsistent usage here it is initialized as an int later it is used as a DigitalInput
-        // TODO:  Comment need separate variables just like how MOTOR_CAN_ID  and transferMotor one with the id and 
-        // TODO:  Comment one with the hardware object.   DigitalInputs are switching to Canifier-based objects
-        private DigitalInput ballInTrasfer = 0; //The thing sensing if the ball intake was successful
-
-        private DigitalInput ballTopTransfer = 1; //The thing sensing if the ball can be placed
+        private DigitalInput ballTopTransfer; //The thing sensing if the ball can be placed
 
         private int numberOfBalls; //The counter for the number of balls
+
 
         
         public enum TRANSFER_STATE //Tells you which state the transfer is in
@@ -31,6 +28,9 @@ namespace yearone2018
                 TRANSFER_ON,
                 TRANSFER_OFF
             }
+
+            private TRANSFER_STATE m_currentState;
+
 
         private Transfer()
         {
@@ -45,8 +45,17 @@ namespace yearone2018
             numberOfBalls = 0; //The original amount of balls
 
             glowing = new LED();
+
+            m_currentState = TRANSFER_STATE.TRANSFER_OFF;
            
         }
+
+        public void setState(TRANSFER_STATE Trans_On)
+        {
+            m_currentState = TRANSFER_ON;
+            return;
+        }
+
         private static Transfer instance = null;
         public static Transfer GetInstance()
         {
@@ -59,10 +68,14 @@ namespace yearone2018
 
         public void SetState //Sets the state of the transfer
         (
-            TRANSFER_STATE state
+           TRANSFER_STATE state
         )
         {
-            switch(state) //Changes the state the transfer is in
+            m_currentState = state;
+        }
+        public void Run()
+        {
+            switch(m_currentState) //Changes the state the transfer is in
                 {
                     case TRANSFER_STATE.TRANSFER_ON:
                         Start();
@@ -90,15 +103,15 @@ namespace yearone2018
             }
             if (numberOfBalls == 0)
             {
-                glowing.set_color(GREEN); 
+                glowing.set_color(LED.MECHANISM_LED.GREEN); 
             }
             else if (numberOfBalls == 1)
             {
-                glowing.set_color(YELLOW);
+                glowing.set_color(LED.MECHANISM_LED.YELLOW);
             }
             else (numberOfBalls == 2)
             {
-               glowing.set_color(RED);
+               glowing.set_color(LED.MECHANISM_LED.RED);
                eject.setState(Expel);
             }
         }

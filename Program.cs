@@ -5,7 +5,6 @@ namespace yearone2018
 {
     public class Program
     {
-        // TODO:  these need to be private static ...
         private int AutonLoopCount = 0;
         private int LoopSec = 50;
         private int AutonTime = 30;
@@ -19,7 +18,6 @@ namespace yearone2018
 
             while (true)                      // loop forever 
             {
-                // TODO:: m_controller isn't defined yet
                 if (m_controller.GetConnectionStatus() == CTRE.Phoenix.UsbDeviceConection.Connected)
                 {
                     CTRE.Phoenix.Watchdog.Feed();

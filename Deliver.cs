@@ -2,24 +2,9 @@
 
 namespace yearone2018
 {
-    public class Deliver //delivering the ball into the conect four box
+    public class Deliver //delivering the ball into the connect four box
     {
-        private const int CANID = 0; //TODO Change CANID
-        private const double HOLDBALL=9; //This will change depending on how FAB mounts the servo
-        private const double DELIVER=10; // This will change depending on how FAB mounts the servo
-        // TODO: will be on a Canifier
-        private Servo deliverServo; //What the servo is called
-        public enum DELIVERSTATE //State
-        {   //The enum
-            HoldBalls, 
-            Deliver
-        }
-        private Deliver()
-        {   //Defining the servo
-            deliverServo = new Servo(CANID); // TODO change CANID 
-        }
-
-        private static Deliver instance = null;
+        private static Deliver instance = null; // a singlex which will make it so we don't need to define deliver twice if we have it in auton and teleop instead have it once.
             public static Deliver GetInstance()
             {
                 if (instance == null)
@@ -28,28 +13,49 @@ namespace yearone2018
                 }
                 return instance;
             }
-        public void setState( DELIVERSTATE state )
+        private const double HOLDBALL=9; //This will change depending on how FAB mounts the servo
+        private const double DELIVER=10; // This will change depending on how FAB mounts the servo
+        private Servo deliverServo; //What the servo is called
+        public enum DELIVERSTATE //State
+        {   //The enum
+            HoldBalls, 
+            Deliver
+        }
+        private DELIVERSTATE m_currentState 
+        private Deliver()
+        {   //Defining the servo
+            RobotMap Map = RobotMap.GetInstance();
+            deliverServo = new Servo(Map.GetDeliverMec_ID());  // its the ID for the servo
+            Hardware.canifier.EnablePWMOutput((int)Constants.kMotorControlCh, false); //TODO this needs to be changed when they mount on the servo
+            m_currentState = DELIVERSTATE.Off
+        }
+        public void setState(DELIVERSTATE deliver)
         {
-            switch(state) //This is telling us if we are going to Holdball, Deliver or default
+            m_current = deliver
+            Run();
+        }
+        public void Run()
+        {
+            switch(m_currentState) //This is telling us if we are going to Holdball, Deliver or default
             {
-                case DELIVERSTATE.HoldBalls:
-                HoldBalls();
+                case HoldBalls:
+                holdBalls();
                 break;
-            case DELIVERSTATE.Deliver:
-                Deliver();
+            case Deliver:
+                deliver();
                 break;
             default:
                      // TODO put error out
                 break;
              }
          }   
-        private void HoldBalls()
+        private void holdBalls()
         {
-            deliverServo.SetAngle(DELIVER); //When holding the ball this is what the servo will do 
+            deliverServo.SetAngle(HOLDBALL); //When holding the ball this is what the servo will do 
         }
-        private void Deliver()
+        private void deliver()
         {
-            deliverServo.SetAngle(HOLDBALL); //When delivering the ball this is what the servo will do
+            deliverServo.SetAngle(DELIVER); //When delivering the ball this is what the servo will do
         }
     }       
 }
