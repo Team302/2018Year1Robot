@@ -1,5 +1,7 @@
 
+using CTRE.Phoenix;
 using CTRE.Phoenix.MotorControl.CAN;
+using Microsoft.SPOT;
 
 namespace yearone2018
 {
@@ -15,9 +17,8 @@ namespace yearone2018
         private TalonSRX transferMotor; //The motor for ball transfer
         private LED glowing; //The LEDs
         private Intake eject; //Hong Bing's code
-        private DigitalInput ballInTrasfer; //The thing sensing if the ball intake was successful
-
-        private DigitalInput ballTopTransfer; //The thing sensing if the ball can be placed
+        private CANifier CANController; //The thing sensing if the ball intake was successful
+         //The thing sensing if the ball can be placed
 
         private int numberOfBalls; //The counter for the number of balls
 
@@ -34,26 +35,24 @@ namespace yearone2018
 
         private Transfer()
         {
-            RobotMap map = RobotMap.GetInstance();
+            Robotmap map = Robotmap.GetInstance();
 
-            transferMotor = new TalonSRX(GetTransfer_ID); //Creates the motor
+            transferMotor = new TalonSRX(map.GetTransfer_ID()); //Creates the motor
 
-            ballInTrasfer = new DigitalInput(GetLowerSensor_ID); //Creates the first sensor
-
-            ballTopTransfer = new DigitalInput(GetUpperSensor_ID); //Creates the second sensor
-
+            CANController = Robotmap.GETCANController(); //Creates the first sensor
+            
             numberOfBalls = 0; //The original amount of balls
 
-            glowing = new LED();
+            glowing = LED.GetInstance();
 
             m_currentState = TRANSFER_STATE.TRANSFER_OFF;
+            eject = Intake.GetInstance();
            
         }
 
-        public void setState(TRANSFER_STATE Trans_On)
+        public TRANSFER_STATE GetCurrentState()
         {
-            m_currentState = TRANSFER_ON;
-            return;
+            return m_currentState;
         }
 
         private static Transfer instance = null;
@@ -84,41 +83,58 @@ namespace yearone2018
                         Stop();
                         break;
                     default:
-                        //TODO: Put an error
+                        Debug.Print("Transfer.SetState called with invalid state");
                         break;
                 }
         }
-        private Start() //Sets motor speed
+        private void Start() //Sets motor speed
         {
+            //Lower sensor says when a ball passes through a the tube and incruments the ball
+            //upper sensor tells us tha twe have balls in the tube.
+            Robotmap map = Robotmap.GetInstance();
             transferMotor.Set(CTRE.Phoenix.MotorControl.ControlMode.PercentOutput, transferMotorSpeed);
-            bool ballPresent = ballInTrasfer.Get();
+            bool ballPresent = IsLowerSensorTripped();
             if (ballPresent)
             {
                 numberOfBalls += 1;
             }
-            bool ballPresentTop = ballTopTransfer.Get();
-            if (ballPresentTop)
+            bool ballPresentTop = IsUpperSensorTripped();
+            if (!ballPresentTop && numberOfBalls > 0)
             {
-                numberOfBalls -= 1;
+                numberOfBalls = 0;
             }
             if (numberOfBalls == 0)
             {
                 glowing.set_color(LED.MECHANISM_LED.GREEN); 
+                eject.setState(Intake.INTAKESTATE.Sweep);
             }
             else if (numberOfBalls == 1)
             {
                 glowing.set_color(LED.MECHANISM_LED.YELLOW);
+                eject.setState(Intake.INTAKESTATE.Sweep);
             }
-            else (numberOfBalls == 2)
+            else 
             {
                glowing.set_color(LED.MECHANISM_LED.RED);
-               eject.setState(Expel);
+               eject.setState(Intake.INTAKESTATE.Expel);
             }
         }
 
-        private Stop() //Sets motor speed
+        private void Stop() //Sets motor speed
         {
             transferMotor.Set(CTRE.Phoenix.MotorControl.ControlMode.PercentOutput, transferMotorStop);
+        }
+
+        public bool IsLowerSensorTripped()
+        {
+            Robotmap map = Robotmap.GetInstance();
+            return !CANController.GetGeneralInput(map.GetLowerSensor_ID());  // sensors are being wired in reverse
+        }
+
+        public bool IsUpperSensorTripped()
+        {
+            Robotmap map = Robotmap.GetInstance();
+            return !CANController.GetGeneralInput(map.GetUpperSensor_ID()); // sensors are being wired in reverse
         }
     }
 }

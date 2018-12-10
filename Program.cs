@@ -1,13 +1,15 @@
 ﻿
+using CTRE.Phoenix;
+using CTRE.Phoenix.Controller;
 using System.Threading;
 
 namespace yearone2018
 {
     public class Program
     {
-        private int AutonLoopCount = 0;
-        private int LoopSec = 50;
-        private int AutonTime = 30;
+        private static int AutonLoopCount = 0;
+        private static int LoopSec = 50;
+        private static int AutonTime = 30;
         public static void Main()
         {
             TeleopControl Telecontrol = new TeleopControl();
@@ -16,13 +18,36 @@ namespace yearone2018
 
             int AutonLoops = LoopSec * AutonTime;
 
+            GameController controller = Telecontrol.GetController();
+
+            bool okToRun = false;             // Can we run code or not
             while (true)                      // loop forever 
             {
-                if (m_controller.GetConnectionStatus() == CTRE.Phoenix.UsbDeviceConection.Connected)
+                // If the USB controller isn't plugged in or if the stop button is pressed
+                // it isn't ok to run the motors.  
+                // If the USB is plugged in, use the start button to activate (it will stay 
+                // that way unless the stop button is pressed or the USB becomes dislodged.
+                if (controller.GetConnectionStatus() == UsbDeviceConnection.Connected)
                 {
-                    CTRE.Phoenix.Watchdog.Feed();
+                    if ( controller.GetButton(Telecontrol.GetStartButton()))
+                    {
+                        okToRun = true;
+                    }
+                    else if ( controller.GetButton(Telecontrol.GetStopButton() ))
+                    {
+                        okToRun = false;
+                    }
+                }
+                else
+                {
+                    okToRun = false;
+                }
 
-                    bool runauton = m_controller.GetButton(A_BUTTON);
+                if (okToRun)
+                { 
+                    Watchdog.Feed();
+
+                    bool runauton = controller.GetButton( Telecontrol.GetAutonButton());
 
                     if (runauton && AutonLoopCount < AutonLoops)
                     {
@@ -36,7 +61,11 @@ namespace yearone2018
                         Telecontrol.Run();
                     }
 
-                    System.Threading.Thread.Sleep(20);
+                    Thread.Sleep(20);
+                }
+                else
+                {
+                    Telecontrol.CheckSensors();
                 }
 
             }

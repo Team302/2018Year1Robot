@@ -1,4 +1,5 @@
 
+using CTRE.Phoenix;
 using CTRE.Phoenix.MotorControl.CAN;
 
 namespace yearone2018
@@ -19,7 +20,7 @@ namespace yearone2018
         private CANifier lightie_boies;
     
 
-        enum MECHANISM_LED
+        public enum MECHANISM_LED
         {
         RED,
         ORANGE,
@@ -36,7 +37,7 @@ namespace yearone2018
 
         private LED()
         {
-            lightie_boies = new CANifier(LED_CAN_ID);
+            lightie_boies = Robotmap.GETCANController();
 
             // H-Hewo?? somewon pwease hewlp me
             // I'm havwing a wittle bit of twobule figuwring out what to do next 3;
@@ -53,52 +54,52 @@ namespace yearone2018
 
             switch (color)
             {
-             case RED:
+             case MECHANISM_LED.RED:
                     r = 255;
                     g = 229;
                     b = 229;
                     break;
-             case ORANGE:
+             case MECHANISM_LED.ORANGE:
                     r = 255;
                     g = 242;
                     b = 229;
                     break;
-             case YELLOW:
+             case MECHANISM_LED.YELLOW:
                     r = 255;
                     g = 255;
                     b = 229;
                     break;
-             case LIME:
+             case MECHANISM_LED.LIME:
                     r = 242;
                     g = 255;
                     b = 229;
                     break;
-             case GREEN:
+             case MECHANISM_LED.GREEN:
                     r = 229;
                     g = 255;
                     b = 229;
                     break;
-             case TEAL:
+             case MECHANISM_LED.TEAL:
                     r = 229;
                     g = 255;
                     b = 242;
                     break;
-             case BLUE: 
+             case MECHANISM_LED.BLUE: 
                     r = 229;
                     g = 229;
                     b = 255;
                     break;
-             case PURPLE:
+             case MECHANISM_LED.PURPLE:
                     r = 242;
                     g = 229;
                     b = 255;
                     break;
-             case PINK:
+             case MECHANISM_LED.PINK:
                     r = 255;
                     g = 229;
                     b = 242;
                     break;
-             case BROWN:
+             case MECHANISM_LED.BROWN:
                     r = 237;
                     g = 229;
                     b = 225;
@@ -107,6 +108,7 @@ namespace yearone2018
                     r = 0;
                     g = 0;
                     b = 0;
+                    break;
             }
             lightie_boies.SetLEDOutput(r, CANifier.LEDChannel.LEDChannelA);
             lightie_boies.SetLEDOutput(g, CANifier.LEDChannel.LEDChannelA);

@@ -1,4 +1,6 @@
-﻿using System.Threading;
+﻿using CTRE.Phoenix.MotorControl;
+using CTRE.Phoenix.MotorControl.CAN;
+using Microsoft.SPOT;
 
 namespace yearone2018
 {
@@ -15,8 +17,8 @@ namespace yearone2018
         }
         private const int INTAKE_CAN_ID = 4;
         private TalonSRX intakeMotor; // What the TalonSRX is and called.
-        private const double INTAKE_SPEED=0.75 // Can change speed when needed.
-        private const double EXPEL_SPEED=-0.75 // Can change speed when needed.
+        private const double INTAKE_SPEED = 0.75; // Can change speed when needed.
+        private const double EXPEL_SPEED = -0.75; // Can change speed when needed.
         public enum INTAKESTATE // A numbered list.
         {
             Sweep,
@@ -28,42 +30,45 @@ namespace yearone2018
         {
             intakeMotor = new TalonSRX(INTAKE_CAN_ID); // Creates the TalonSRX motor.
             intakeMotor. SetInverted(true); // If you get value i will invert it. if it is going the wrong way it can be inverted.
-            m_currentState = INTAKESTATE.Off
+            m_currentState = INTAKESTATE.Off;
+        }
+        public INTAKESTATE GetCurrentState()
+        {
+            return m_currentState;
         }
         public void setState(INTAKESTATE sweeper)
         {
             m_currentState = sweeper;
-            Run();
         }
         public void Run()
         {
-              switch(m_currentState); // If we are going to have sweep to be on, sweep to be off, expel, or default.
+              switch(m_currentState) // If we are going to have sweep to be on, sweep to be off, expel, or default.
             {
-            case Sweep:
+            case INTAKESTATE.Sweep:
                 sweepOn();
                 break;
-            case Off:
+            case INTAKESTATE.Off:
                 sweepOff();
                 break;
-            case Expel:
+            case INTAKESTATE.Expel:
                 expel();
                 break;
             default:
-                    // TODO put error out.
+                Debug.Print("Intake.setState called with invalid state");
                 break;
             }
         }
         private void sweepOn()
         {
-            INTAKE_SPEED.Set(CTRE.Phoenix.MotorControl.ControlMode.PercentOutput, INTAKE_SPEED); // This means that the sweeper will sweep the balls in.
+            intakeMotor.Set(ControlMode.PercentOutput, INTAKE_SPEED); // This means that the sweeper will sweep the balls in.
         }
         private void sweepOff()
         {
-            INTAKE_STOP_SPEED.Set(CTRE.Phoenix.MotorControl.ControlMode.PercentOutput, 0.0) // The sweeper will stop.
+            intakeMotor.Set(ControlMode.PercentOutput, 0.0); // The sweeper will stop.
         }
         private void expel()
         {
-            EXPEL_SPEED.Set(CTRE.Phoenix.MotorControl.ControlMode.PercentOutput, EXPEL_SPEED) // This means that the sweeper will expel the balls out.
+            intakeMotor.Set(ControlMode.PercentOutput, EXPEL_SPEED); // This means that the sweeper will expel the balls out.
         }
     }       
 }

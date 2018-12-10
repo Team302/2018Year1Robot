@@ -1,24 +1,31 @@
-﻿using System.Threading;
-
+﻿using CTRE.Phoenix;
+using Microsoft.SPOT;
 namespace yearone2018
 {
     public class FlagGrabber
     {
-        private const double ClosedGrabber = 9; //This will change depending on how FAB mounts the servo
-        private const double OpenGrabber = 10; // This will change depending on how FAB mounts the servo
+        private const float minPWMSignalRange = 553f;
+        private const float maxPWMSignalRange = 2450f;
+        private const float pwmOutput = 4200f; 
+
+        private const float CLOSEGRABBER =1.0f; //This will change depending on how FAB mounts the servo
+        private const float OPENGRABBER = -1.0f; // This will change depending on how FAB mounts the servo
+        private CANifier CANController;
         public enum FlagGrabberSTATE //State
         {   //The enum
-            ClosedGrabber, 
-            OpenGrabber
+            GRABBER_CLOSED, 
+            GRABBER_OPEN
         }
 
-        private CANifier flag_grab;
-
+        private FlagGrabberSTATE m_currentState;
         private FlagGrabber()
 
         {
             Robotmap theWholeShabang = Robotmap.GetInstance();
-            flag_grab = new CANifier(theWholeShabang.GetFlagGrabber_ID);
+            CANController = Robotmap.GETCANController();
+            CANController.EnablePWMOutput((int)theWholeShabang.GetFlagGrabberServo_ID(), true); //move servo
+
+            m_currentState = FlagGrabberSTATE.GRABBER_OPEN;
         }
 
         private static FlagGrabber instance = null;
@@ -30,28 +37,42 @@ namespace yearone2018
                 }
                 return instance;
             }
-        public void setState()
+        public FlagGrabberSTATE GetCurrentState()
         {
-            switch(setState) 
+            return m_currentState;
+        }
+        public void setState(FlagGrabberSTATE grabber)
+        {
+            m_currentState = grabber;
+        }   
+        public void Run()
+        {
+            switch(m_currentState) 
             {
-                case ClosedGrabber:
-                ClosedGrabber();
+                case FlagGrabberSTATE.GRABBER_CLOSED:
+                CloseGrabber();
                 break;
-            case OpenGrabber:
+            case FlagGrabberSTATE.GRABBER_OPEN:
                 OpenGrabber();
                 break;
             default:
-                     // TODO put error out
+                Debug.Print("FlagGrabber.setState called with invalid state");
                 break;
              }
          }   
-        private void ClosedGrabber()
+        private void CloseGrabber()
         {
-            FlagGraberServo.SetAngle(OpenGrabber); 
+            Robotmap map = Robotmap.GetInstance();
+            float pulses = LinearInterpolation.Calculate(CLOSEGRABBER, -1.0f, minPWMSignalRange, 1.0f, maxPWMSignalRange);
+            float percentOut = pulses / pwmOutput;
+            CANController.SetPWMOutput(map.GetFlagGrabberServo_ID(), percentOut); //move servo
         }
         private void OpenGrabber()
         {
-            FlagGrabberServo.SetAngle(ClosedGrabber); 
+            Robotmap map = Robotmap.GetInstance();
+            float pulses = LinearInterpolation.Calculate(OPENGRABBER, -1.0f, minPWMSignalRange, 1.0f, maxPWMSignalRange);
+            float percentOut = pulses / pwmOutput;
+            CANController.SetPWMOutput(map.GetFlagGrabberServo_ID(), pulses); //move servo
         } //FLAGSURVO LOOK LOOK LOOOK LOOK LOOK LOOK LOOK DO THIS FIX IT HE SHOWED YOU YOU GOTTA DO IT LLLLLLOOOOOOOOOOOK
     }       
 }
