@@ -12,6 +12,7 @@ namespace yearone2018
         private Transfer m_transfer;
         private FlagElevator m_elevator;
         private FlagGrabber m_grabber;
+        private Deliver m_deliver;
 
         private double m_deadband = 0.1;
         private Intake m_intake;
@@ -40,6 +41,8 @@ namespace yearone2018
             m_gamepad = new GameController(UsbHostDevice.GetInstance()); // create gamepad
 
             m_chassis = Chassis.GetInstance(); //Creates chassis
+
+            m_deliver = Deliver.GetInstance(); // Create deliver 
 
             m_transfer = Transfer.GetInstance(); //Creates "Transfer"
 
@@ -141,8 +144,19 @@ namespace yearone2018
                 m_intake.setState(Intake.INTAKESTATE.Off); // else no button is pressed then the sweep will be off.
                 m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_OFF);
             }
+
+            if ( deliver )
+            {
+                m_deliver.setState(Deliver.DELIVERSTATE.Deliver);
+            }
+            else
+            {
+                m_deliver.setState(Deliver.DELIVERSTATE.HoldBalls);
+            }
+
             m_intake.Run();
             m_transfer.Run();
+            m_deliver.Run();
         }
 
         public void FlagHandler()
