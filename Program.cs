@@ -56,7 +56,7 @@ namespace yearone2018
                         AutonLoopCount ++ ;
                     }
 
-                    else if (AutonLoopCount >= AutonLoops)
+                    else
                     {
                         Telecontrol.Run();
                     }
