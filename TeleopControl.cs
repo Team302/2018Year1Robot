@@ -117,25 +117,14 @@ namespace yearone2018
             
         }
 
-        public void BallHandler() //TODO: TRANSFER AND INTAKE SIMULTANEOUSLY
+        public void BallHandler() 
         {
-            bool transferable = m_gamepad.GetButton(A_BUTTON); //Returns a true or false for a button press
-
             bool deliver = m_gamepad.GetButton(Y_BUTTON);
 
             bool runintake = m_gamepad.GetButton(LEFT_BUMPER); //whether the Intake button is pressed. bool is true or false
             
             bool runexpel = m_gamepad.GetButton(RIGHT_BUMPER); // Whether if the Expel button is pressed is true or false
 
-            if (transferable) //Turns transfer on if button is pressed
-            {
-                m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_ON);
-            }
-            else  //Keeps transfer off if not pressed
-            {
-                m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_OFF);
-            }
-            m_transfer.Run();
 
             if (runintake) // If/else if/else statement 
             {
@@ -145,13 +134,16 @@ namespace yearone2018
             else if (runexpel)
             {
                 m_intake.setState(Intake.INTAKESTATE.Expel); // Else if the Expel button is pressed then it will expel
+                m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_OFF);
             }
             else
             {
                 m_intake.setState(Intake.INTAKESTATE.Off); // else no button is pressed then the sweep will be off.
+                m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_OFF);
             }
             m_intake.Run();
-        }   
+            m_transfer.Run();
+        }
 
         public void FlagHandler()
         {
