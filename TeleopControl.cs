@@ -108,7 +108,7 @@ namespace yearone2018
 
         public void DriveWithJoysticks()
         {
-            double throttle = -1.0 * m_gamepad.GetAxis(LEFT_JOYSTICK_Y);      // read the gamepad 
+            double throttle = -0.6 * m_gamepad.GetAxis(LEFT_JOYSTICK_Y);      // read the gamepad 
             
             throttle = ( System.Math.Abs(throttle) < m_deadband) ? 0.0  : throttle; //Makes very small movements on joystick not move the robot
 
