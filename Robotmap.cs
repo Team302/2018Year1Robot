@@ -18,13 +18,13 @@ namespace yearone2018
         private int CAN_ID_ELEVATOR = 3;
 
         // Digital Input Pins
-        private CANifier.GeneralPin DIGITAL_ID_LowerSensor = CANifier.GeneralPin.QUAD_A;
-        private CANifier.GeneralPin DIGITAL_ID_UpperSensor = CANifier.GeneralPin.QUAD_B;
-        private CANifier.GeneralPin DIGITAL_ID_BumperSensor = CANifier.GeneralPin.SPI_MISO_PWM2P;
+        private CANifier.GeneralPin DIGITAL_ID_LowerSensor = CANifier.GeneralPin.SCL;
+        private CANifier.GeneralPin DIGITAL_ID_UpperSensor = CANifier.GeneralPin.SDA;
+        private CANifier.GeneralPin DIGITAL_ID_BumperSensor = CANifier.GeneralPin.LIMF;
 
         // Servo PWM Pins
-        private uint PWM_ID_FlagGrabber = 1;
-        private uint PWM_ID_DeliverMec = 0;
+        private uint PWM_ID_FlagGrabber = (uint)CANifier.PWMChannel.PWMChannel1;
+        private uint PWM_ID_DeliverMec = (uint)CANifier.PWMChannel.PWMChannel0;
 
 
 

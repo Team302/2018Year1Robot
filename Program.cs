@@ -9,7 +9,9 @@ namespace yearone2018
     {
         private static int AutonLoopCount = 0;
         private static int LoopSec = 50;
-        private static int AutonTime = 30;
+        private static int AutonTime = 15;
+        private static bool runningAuton = false;
+        private static bool ranAuto = false;
         public static void Main()
         {
             TeleopControl Telecontrol = new TeleopControl();
@@ -49,13 +51,18 @@ namespace yearone2018
 
                     bool runauton = controller.GetButton( Telecontrol.GetAutonButton());
 
-                    if (runauton && AutonLoopCount < AutonLoops)
+                    if ((runauton || runningAuton) && AutonLoopCount < AutonLoops)
                     {
-                        Autocontrol.Run();
-
+                        runningAuton = !Autocontrol.Run();
+                        ranAuto = true;
                         AutonLoopCount ++ ;
                     }
-
+                    else if (ranAuto && AutonLoopCount < AutonLoops)
+                    {
+                        Deliver del = Deliver.GetInstance();
+                        del.Run();
+                        AutonLoopCount++;
+                    }
                     else
                     {
                         Telecontrol.Run();

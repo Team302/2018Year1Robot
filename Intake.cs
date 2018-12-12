@@ -15,10 +15,9 @@ namespace yearone2018
             }
             return instance;
         }
-        private const int INTAKE_CAN_ID = 4;
         private TalonSRX intakeMotor; // What the TalonSRX is and called.
-        private const double INTAKE_SPEED = 0.75; // Can change speed when needed.
-        private const double EXPEL_SPEED = -0.75; // Can change speed when needed.
+        private const double INTAKE_SPEED = 1.0; // Can change speed when needed.
+        private const double EXPEL_SPEED = -1.0; // Can change speed when needed.
         public enum INTAKESTATE // A numbered list.
         {
             Sweep,
@@ -28,7 +27,8 @@ namespace yearone2018
         private INTAKESTATE m_currentState;
         private Intake()
         {
-            intakeMotor = new TalonSRX(INTAKE_CAN_ID); // Creates the TalonSRX motor.
+            Robotmap map = Robotmap.GetInstance();
+            intakeMotor = new TalonSRX(map.GetIntake_ID()); // Creates the TalonSRX motor.
             intakeMotor. SetInverted(true); // If you get value i will invert it. if it is going the wrong way it can be inverted.
             m_currentState = INTAKESTATE.Off;
         }

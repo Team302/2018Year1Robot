@@ -7,8 +7,9 @@ namespace yearone2018
 {
     class Transfer
     {
-        private const double transferMotorSpeed = 1; //The "original" speed setting for the transfer motor
-        private const double transferMotorStop = 0; //The "stop" speed setting for the transfer motor
+        private const double transferMotorSpeed = 1.0; //The "original" speed setting for the transfer motor
+        private const double transferMotorStop = 0.0; //The "stop" speed setting for the transfer motor
+        private const double ExpelSpeed = -1.0;
 
         private const int MOTOR_CAN_ID = 3; //Identifies the motor controller
         private const int IN_TRANSFER = 0; //The original setting for whether or not a ball is in
@@ -27,7 +28,8 @@ namespace yearone2018
         public enum TRANSFER_STATE //Tells you which state the transfer is in
             {
                 TRANSFER_ON,
-                TRANSFER_OFF
+                TRANSFER_OFF,
+                TRANSFER_EXPEL
             }
 
             private TRANSFER_STATE m_currentState;
@@ -38,6 +40,7 @@ namespace yearone2018
             Robotmap map = Robotmap.GetInstance();
 
             transferMotor = new TalonSRX(map.GetTransfer_ID()); //Creates the motor
+            transferMotor.SetInverted(true);
 
             CANController = Robotmap.GETCANController(); //Creates the first sensor
             
@@ -82,6 +85,9 @@ namespace yearone2018
                     case TRANSFER_STATE.TRANSFER_OFF:
                         Stop();
                         break;
+                    case TRANSFER_STATE.TRANSFER_EXPEL:
+                        Expel();
+                        break;
                     default:
                         Debug.Print("Transfer.SetState called with invalid state");
                         break;
@@ -125,16 +131,21 @@ namespace yearone2018
             transferMotor.Set(CTRE.Phoenix.MotorControl.ControlMode.PercentOutput, transferMotorStop);
         }
 
+        private void Expel()
+        {
+            transferMotor.Set(CTRE.Phoenix.MotorControl.ControlMode.PercentOutput, ExpelSpeed);
+        }
+
         public bool IsLowerSensorTripped()
         {
             Robotmap map = Robotmap.GetInstance();
-            return !CANController.GetGeneralInput(map.GetLowerSensor_ID());  // sensors are being wired in reverse
+            return CANController.GetGeneralInput(map.GetLowerSensor_ID());  // sensors are being wired in reverse
         }
 
         public bool IsUpperSensorTripped()
         {
             Robotmap map = Robotmap.GetInstance();
-            return !CANController.GetGeneralInput(map.GetUpperSensor_ID()); // sensors are being wired in reverse
+            return CANController.GetGeneralInput(map.GetUpperSensor_ID()); // sensors are being wired in reverse
         }
     }
 }

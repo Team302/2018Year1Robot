@@ -39,7 +39,7 @@ namespace yearone2018
 
             right_motor = new TalonSRX(map.GetRightDrive_ID());
             right_motor.SetNeutralMode(NeutralMode.Brake);
-            right_motor.SetInverted(true); // Can invert the direction the motors are moving
+            right_motor.SetInverted(false); // Can invert the direction the motors are moving
 
             drive_assister = new PigeonIMU(map.Get_ID_Pigeon()); //TODO Get real name of pigeon from Christina
 
@@ -74,9 +74,10 @@ namespace yearone2018
             int r = right_motor.GetSelectedSensorPosition();
             double average = (l + r) * 0.5; //Finds average of what the wheel distance
             //Finds the distance traveled using the encoders
-            double counts_per_revolution = average / Counts; //Finds the counts per revolution
-            double inches_per_revolution = (WheelDiameter * System.Math.PI) * Counts; //Finds how many inches will be travelled per revolution
-            double inches_traveled = inches_per_revolution * Drive_Gear_Ratio; //Finds the inches travelled using gear ratio
+            double revolutions = average / Counts; //Finds the counts per revolution
+            double inches = (WheelDiameter * System.Math.PI) * revolutions; //Finds how many inches will be travelled per revolution
+//            double inches_traveled = inches * Drive_Gear_Ratio; //Finds the inches travelled using gear ratio
+            double inches_traveled = inches/Drive_Gear_Ratio; //Finds the inches travelled using gear ratio
             return inches_traveled;
         }
 

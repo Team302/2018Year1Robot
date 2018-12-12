@@ -6,6 +6,7 @@ namespace yearone2018
     public class Deliver //delivering the ball into the connect four box
     {
         private const float minPWMSignalRange = 553f;
+//        private const float maxPWMSignalRange = 2425f;
         private const float maxPWMSignalRange = 2450f;
         private const float pwmOutput = 4200f;
 
@@ -18,7 +19,7 @@ namespace yearone2018
                 }
                 return instance;
             }
-        private const float DELIVER = 1.0f; // This will change depending on how FAB mounts the servo
+        private const float DELIVER = -0.2f; // This will change depending on how FAB mounts the servo
         private const float HOLD = -1.0f; // This will change depending on how FAB mounts the servo
         private CANifier deliverServo; //What the servo is called
         public enum DELIVERSTATE //State
@@ -31,8 +32,6 @@ namespace yearone2018
         {   //Defining the servo
             Robotmap map = Robotmap.GetInstance();
             deliverServo = Robotmap.GETCANController();
-            deliverServo.EnablePWMOutput((int)map.GetDeliverMec_ID(), true); 
-
             m_currentState = DELIVERSTATE.HoldBalls;
         }
         public DELIVERSTATE GetCurrentState() //current state
@@ -63,14 +62,18 @@ namespace yearone2018
             Robotmap map = Robotmap.GetInstance();
             float pulses = LinearInterpolation.Calculate(HOLD, -1.0f, minPWMSignalRange, 1.0f, maxPWMSignalRange);
             float percentOut = pulses / pwmOutput;
-            deliverServo.SetPWMOutput(map.GetFlagGrabberServo_ID(), pulses); //move servo        }
+
+            deliverServo.EnablePWMOutput((int)map.GetDeliverMec_ID(), true);
+            deliverServo.SetPWMOutput(map.GetDeliverMec_ID(), percentOut); //move servo      
         }
         private void deliver()
         {
             Robotmap map = Robotmap.GetInstance();
             float pulses = LinearInterpolation.Calculate(DELIVER, -1.0f, minPWMSignalRange, 1.0f, maxPWMSignalRange);
             float percentOut = pulses / pwmOutput;
-            deliverServo.SetPWMOutput(map.GetFlagGrabberServo_ID(), pulses); //move servo        
+
+            deliverServo.EnablePWMOutput((int)map.GetDeliverMec_ID(), true);
+            deliverServo.SetPWMOutput(map.GetDeliverMec_ID(), percentOut); //move servo        
         }
     }       
 }

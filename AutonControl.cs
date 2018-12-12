@@ -5,7 +5,7 @@ namespace yearone2018
         private const double RobotLength = 27.25; //How long the robot is
         private const int WheelDiameter = 6;  // The wheel diameter
         private const double RedorBlueside = 96; //Only one side of the field, not counting the game grid
-        private const double Drive_Speed = .75; //Sets how fast the robot moves
+        private const double Drive_Speed = .5; //Sets how fast the robot moves
         private const double SlowDownSpeed = .25; //Speed for slow down distance
         private const double SlowDownPercentage = .80; //Percentage of the whole distance slowing down will take
         private const double Correction = 0.01; //Changes the direction if off angle
@@ -32,8 +32,9 @@ namespace yearone2018
             ExtraDistance = m_chassis.Get_distance() + (DistanceToDrive * ExtraDistancePercentage);
         }
 
-        public void Run()
+        public bool Run()
         {
+            bool done = false;
            
             double heading = m_chassis.Get_heading(); //Finds the headingits traveling
             double error = DesiredHeading - heading; //Finds how far off the angle the bot is
@@ -45,6 +46,8 @@ namespace yearone2018
             {
                 m_chassis.drive(0, 0);//Stops the bot when bumper pressed
                 Deliver_Mechanism.setState(Deliver.DELIVERSTATE.Deliver); //Delivers the balls
+                Deliver_Mechanism.Run();
+                done = true;
             }
             else
             {
@@ -73,8 +76,12 @@ namespace yearone2018
                 else 
                 {
                     m_chassis.drive (0,0); //Stops the motors
+                    Deliver_Mechanism.setState(Deliver.DELIVERSTATE.Deliver); //Delivers the balls
+                    Deliver_Mechanism.Run();
+                    done = true;
                 }
             }
+            return done;
         }
 
     }
