@@ -36,6 +36,7 @@ namespace yearone2018
         private const uint LEFT_JOYSTICK_X = LogitechGamepad.kAxis_LeftX;
         private const uint LEFT_JOYSTICK_Y = LogitechGamepad.kAxis_LeftY;
 
+        private bool prevDeliver;
         public TeleopControl()
         {
             m_gamepad = new GameController(UsbHostDevice.GetInstance()); // create gamepad
@@ -51,6 +52,7 @@ namespace yearone2018
             m_elevator = FlagElevator.GetInstance(); //Creates Flag Elevator
 
             m_grabber = FlagGrabber.GetInstance(); //Creates Flag Grabber
+            prevDeliver = false;
            
         }
 
@@ -87,6 +89,21 @@ namespace yearone2018
             Debug.Print("Distance " + m_chassis.Get_distance().ToString());
             Debug.Print("Lower Banner " + m_transfer.IsLowerSensorTripped().ToString());
             Debug.Print("Upper Banner " + m_transfer.IsUpperSensorTripped().ToString());
+
+            //Robotmap map = Robotmap.GetInstance();
+            //CANifier can = Robotmap.GETCANController();
+            //Debug.Print("sensor LIMF " + can.GetGeneralInput(CANifier.GeneralPin.LIMF));
+            //Debug.Print("sensor LIMR " + can.GetGeneralInput(CANifier.GeneralPin.LIMR));
+            //Debug.Print("sensor QUADA " + can.GetGeneralInput(CANifier.GeneralPin.QUAD_A));
+            //Debug.Print("sensor QUADB " + can.GetGeneralInput(CANifier.GeneralPin.QUAD_B));
+            //Debug.Print("sensor QUAD_IDX " + can.GetGeneralInput(CANifier.GeneralPin.QUAD_IDX));
+            //Debug.Print("sensor scl " + can.GetGeneralInput(CANifier.GeneralPin.SCL));
+            //Debug.Print("sensor sda " + can.GetGeneralInput(CANifier.GeneralPin.SDA));
+            //Debug.Print("sensor spi_clk_pwm0p " + can.GetGeneralInput(CANifier.GeneralPin.SPI_CLK_PWM0P));
+            //Debug.Print("sensor spi_cs " + can.GetGeneralInput(CANifier.GeneralPin.SPI_CS));
+            //Debug.Print("sensor spi_miso_pwm2p " + can.GetGeneralInput(CANifier.GeneralPin.SPI_MISO_PWM2P));
+            //Debug.Print("sensor spi_mosi_pwm1p " + can.GetGeneralInput(CANifier.GeneralPin.SPI_MOSI_PWM1P));
+
         }
 
         public void DriveWithJoysticks()
@@ -103,8 +120,8 @@ namespace yearone2018
 
             steer = (System.Math.Pow(steer, 3.0));        //Cubes the value
 
-            double left_speed = throttle - steer;
-            double right_speed = throttle + steer;
+            double left_speed = throttle + steer;
+            double right_speed = throttle - steer;
             // Formula for arcade drive
 
             
@@ -122,7 +139,7 @@ namespace yearone2018
 
         public void BallHandler() 
         {
-            bool deliver = m_gamepad.GetButton(Y_BUTTON);
+            bool deliver = !m_gamepad.GetButton(Y_BUTTON);
 
             bool runintake = m_gamepad.GetButton(LEFT_BUMPER); //whether the Intake button is pressed. bool is true or false
             
@@ -137,7 +154,7 @@ namespace yearone2018
             else if (runexpel)
             {
                 m_intake.setState(Intake.INTAKESTATE.Expel); // Else if the Expel button is pressed then it will expel
-                m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_OFF);
+                m_transfer.SetState(Transfer.TRANSFER_STATE.TRANSFER_EXPEL);
             }
             else
             {
@@ -156,7 +173,12 @@ namespace yearone2018
 
             m_intake.Run();
             m_transfer.Run();
-            m_deliver.Run();
+            if ( prevDeliver != deliver )
+            {
+                m_deliver.Run();
+            }
+
+            prevDeliver = deliver;
         }
 
         public void FlagHandler()
